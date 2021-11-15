@@ -1,0 +1,169 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+   http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="202011051131" author="francis">
+        <createSequence sequenceName="hibernate_sequence"
+                        cycle="false"
+                        startValue="1"
+                        incrementBy="1"
+                        maxValue="9223372036854775807"
+                        schemaName="public"
+                        minValue="1"/>
+    </changeSet>
+
+    <changeSet author="francis" id="202011051132">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="public" tableName="oauth_access_token"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="public"
+                     tableName="oauth_access_token">
+            <column name="authentication_id" type="varchar(255)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_name" type="varchar(255)"/>
+            <column name="token_id" type="varchar(255)"/>
+            <column name="token" type="bytea"/>
+            <column name="client_id" type="varchar(255)"/>
+            <column name="authentication" type="bytea"/>
+            <column name="refresh_token" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="francis" id="202011051133">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="public" tableName="oauth_refresh_token"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="public"
+                     tableName="oauth_refresh_token">
+            <column name="token_id" type="varchar(255)"/>
+            <column name="token" type="bytea"/>
+            <column name="authentication" type="bytea"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="francis" id="202011051134">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists schemaName="public" tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="public"
+                     tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="created_by_user_id" type="bigint">
+                <constraints foreignKeyName="fk_created_by_user_id_table_users"
+                             referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="last_modified_by_user_id" type="bigint">
+                <constraints foreignKeyName="fk_last_modified_by_user_id_table_users"
+                             referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="account_non_expired" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_non_locked" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="credentials_non_expired" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_deleted" type="boolean" defaultValueBoolean="false"/>
+            <column name="account_deleted_by_user_id" type="bigint">
+                <constraints foreignKeyName="fk_account_deleted_by_user_id_table_users"
+                             referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="account_deleted_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="francis" id="202011051135">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists schemaName="public" tableName="user_roles"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="public" tableName="user_roles">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_id_table_user_roles"
+                             referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="user_roles"
+                             columnNames="user_id, role" schemaName="public"
+                             constraintName="unique_user_id_role_table_user_roles"/>
+    </changeSet>
+
+    <changeSet author="francis" id="202011051136">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists schemaName="public" tableName="user_password_reset"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="public"
+                     tableName="user_password_reset">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="created_by_user_id" type="bigint">
+                <constraints foreignKeyName="fk_created_by_user_id_table_user_password_reset"
+                             referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="last_modified_by_user_id" type="bigint">
+                <constraints foreignKeyName="fk_last_modified_by_user_id_table_user_password_reset"
+                             referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="token" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiry_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="fk_user" referencedTableName="users"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="user_password_reset" columnNames="token"/>
+    </changeSet>
+
+</databaseChangeLog>
