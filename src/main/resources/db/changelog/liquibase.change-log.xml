@@ -166,4 +166,27 @@
         <addUniqueConstraint tableName="user_password_reset" columnNames="token"/>
     </changeSet>
 
+    <changeSet author="moses" id="202112141838">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists schemaName="public" tableName="books"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="public"
+                     tableName="books">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="author" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
